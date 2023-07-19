@@ -20,6 +20,9 @@ func _input(event):
 		last_input = false
 		return
 	
+	if not event.is_released():
+		return
+	
 	event.set_pressed(false)
 	var tree = get_tree()
 	tree.reload_current_scene()
