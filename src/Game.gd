@@ -46,11 +46,11 @@ const enemyFactory = preload("res://scenes/enemy.tscn")
 var post_game : bool = false
 
 func _ready():
+	Global.load_hi()
 	Global.init()
 	score_base_str = label.text
 	hi_base_str = highScoreLabel.text
 	updateScoreLabel()
-	
 
 func _process(_delta):
 	if not start or game_over.visible:
@@ -66,10 +66,10 @@ func _process(_delta):
 		countdown_background = Global.random_background.randi_fixed()
 
 func updateScoreLabel() -> void :
-	if Global.last_score > 0:
+	if Global.hi_score > 0:
 		if !highScoreLabel.visible:
 			highScoreLabel.visible = true
-		highScoreLabel.set_text(hi_base_str % Global.last_score)
+		highScoreLabel.set_text(hi_base_str % Global.hi_score)
 	if Global.debug:
 		var count = 0
 		for node in get_children():
@@ -82,12 +82,14 @@ func updateScoreLabel() -> void :
 func stop():
 	terrain.stop()
 	scoreTimer.stop()
-	print("Score: ", time)
 	game_over.visible = true
 	get_tree().paused = true
 	
 	end.set_catch_input(true)
 	Global.last_score = time
+	Global.hi_score = max(Global.hi_score, Global.last_score)
+	Global.save_hi()
+	print("Score: ", time, ", High score: ", Global.hi_score)
 
 func _on_Player_collide():
 	stop()

@@ -20,8 +20,14 @@ var speed : Vector2 = Vector2(-100, 0)
 var speed_background : Vector2 = Vector2(-100, 0)
 # Last score from previous game
 var last_score : int = 0
+# High score
+var hi_score : int = 0
 # Activate debug mode
 var debug : bool = false
+# Save file
+var save_file : String = "llama_data.txt"
+# init
+var inited : bool = false
 
 func init():
 	randomize()
@@ -29,6 +35,7 @@ func init():
 	random_background = RNGFixed.new(RANDI_MIN * 4, RANDI_MAX * 5)
 	speed = Vector2(MIN_SPEED, 0)
 	speed_background = Vector2(MIN_BACKGROUND_SPEED, 0)
+	inited = true
 
 # Get all sprites of a TileMap.
 # Returns a Dictionary <int, (Sprite2D, PackedVector2Array)>
@@ -57,6 +64,20 @@ func getAllSprites(map : TileMap) -> Dictionary :
 				polygon = data.get_collision_polygon_points(0, 0)
 			dict[dict.size() + 1] = [sprite, polygon]
 	return dict
+
+func load_hi() -> void:
+	if inited or not FileAccess.file_exists(save_file):
+		return
+	
+	var file : FileAccess = FileAccess.open(save_file, FileAccess.READ_WRITE)
+	hi_score = file.get_32()
+	print("Loaded: ", hi_score)
+	file.close()
+
+func save_hi() -> void:
+	var file : FileAccess = FileAccess.open(save_file, FileAccess.WRITE_READ)
+	file.store_32(hi_score)
+	file.close()
 
 func speedUp() -> void:
 	if speed.x == MAX_SPEED:
